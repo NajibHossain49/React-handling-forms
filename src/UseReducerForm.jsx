@@ -1,34 +1,47 @@
 import React, { useReducer } from 'react';
 
-// Reducer function to handle form state updates
-const reducer = (state, action) => {
-  return { ...state, [action.name]: action.value };
-};
-
-const UseReducerForm = () => {
-  const [formState, dispatch] = useReducer(reducer, {
+// Initial state for the form
+const initialState = {
+  name: '',
+  email: '',
+  password: '',
+  gender: '',
+  country: '',
+  bio: '',
+  termsAccepted: false,
+  errors: {
     name: '',
     email: '',
     password: '',
     gender: '',
     country: '',
     bio: '',
-    termsAccepted: false,
-    errors: {
-      name: '',
-      email: '',
-      password: '',
-      gender: '',
-      country: '',
-      bio: '',
-      termsAccepted: '',
-    },
-  });
+    termsAccepted: '',
+  },
+};
+
+// Reducer function to handle form state updates
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'UPDATE_FIELD':
+      return { ...state, [action.name]: action.value };
+    case 'RESET_FORM':
+      return initialState; // Reset the form to initial values
+    case 'SET_ERRORS':
+      return { ...state, errors: action.errors };
+    default:
+      return state;
+  }
+};
+
+const UseReducerForm = () => {
+  const [formState, dispatch] = useReducer(reducer, initialState);
 
   // Handle input changes and dispatch updates
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     dispatch({
+      type: 'UPDATE_FIELD',
       name,
       value: type === 'checkbox' ? checked : value,
     });
@@ -48,7 +61,7 @@ const UseReducerForm = () => {
     }
 
     // Email validation
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zAZ]{2,}$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!formState.email.trim()) {
       errors.email = 'Email is required';
       isValid = false;
@@ -102,7 +115,7 @@ const UseReducerForm = () => {
       errors.termsAccepted = '';
     }
 
-    dispatch({ name: 'errors', value: errors });
+    dispatch({ type: 'SET_ERRORS', errors });
     return isValid;
   };
 
@@ -111,12 +124,18 @@ const UseReducerForm = () => {
     e.preventDefault();
 
     if (validateForm()) {
-      console.log(formState);
+        alert("Form submitted successfully!");
+      console.log(formState); // Here you can send the data to an API or handle it accordingly.
+
+      // Reset form after successful submission
+      dispatch({ type: 'RESET_FORM' });
     }
   };
 
   return (
     <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md">
+        <h2 className="text-lg font-bold mb-4">Registration Form: Controlled Form with useReducer</h2>
+        <p className='text-lg mb-4'>This approach uses useReducer for better scalability and managing complex form states.</p>
       <form onSubmit={handleSubmit}>
         {/* Name Input */}
         <div className="mb-4">
