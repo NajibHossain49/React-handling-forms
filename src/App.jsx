@@ -9,7 +9,7 @@ const App = () => {
   return (
     <div>
       {/* <UncontrolledFormWithTarget /> */}
-      <SingleStateObject />
+      {/* <SingleStateObject /> */}
       <UseReducerForm />
       <IndividualStateForm />
     </div>
